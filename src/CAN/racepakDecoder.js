@@ -9,7 +9,7 @@ const RACEPACK_CAN_MAP = {
     0x1e001000: (data) => {
         return [
             // { id: DATA_KEYS.RTC, data: data. },
-            { id: DATA_MAP.RPM, data: data.readInt32LE(4) / 256 },
+            { id: DATA_MAP.RPM, data: convertToRealValue(data.readInt32LE(4)) },
         ];
     },
 
@@ -22,7 +22,7 @@ const RACEPACK_CAN_MAP = {
     0x1e005000: (data) => {
         return [
             // { id: DATA_KEYS.INJECTOR_PULSEWIDTH, data: data.readInt32LE(0) / 256 },
-            { id: DATA_MAP.FUEL_FLOW, data: data.readInt32LE(4) / 256 },
+    //        { id: DATA_MAP.FUEL_FLOW, data: data.readInt32LE(4) / 256 },
         ];
     },
 
@@ -40,7 +40,7 @@ const RACEPACK_CAN_MAP = {
      */
     0x1e029000: (data) => {
         return [
-            { id: DATA_MAP.PEDAL_POSITION, data: data.readInt32LE(0) / 256 },
+  //          { id: DATA_MAP.PEDAL_POSITION, data: data.readInt32LE(0) / 256 },
             // { id: DATA_KEYS.FUEL_PRESSURE, data: data.readInt32LE(4) / 256 },
         ];
     },
@@ -60,7 +60,7 @@ const RACEPACK_CAN_MAP = {
      */
     0x1E011000: (data) => {
         return [
-            { id: DATA_MAP.TARGET_AFR, data: data.readInt32LE(0) / 256 },
+//            { id: DATA_MAP.TARGET_AFR, data: data.readInt32LE(0) / 256 },
             // { id: DATA_KEYS.AFR_RIGHT, data: data.readInt32LE(4) / 256 },
         ];
     },
@@ -74,8 +74,8 @@ const RACEPACK_CAN_MAP = {
      */
     0x1E015000: (data) => {
         return [
-            { id: DATA_MAP.IGNITION_TIMING, data: data.readInt32LE(0) / 256 },
-            { id: DATA_MAP.AFR_AVERAGE, data: data.readInt32LE(4) / 256 },
+ //           { id: DATA_MAP.IGNITION_TIMING, data: data.readInt32LE(0) / 256 },
+ //           { id: DATA_MAP.AFR_AVERAGE, data: data.readInt32LE(4) / 256 },
         ];
     },
 
@@ -88,7 +88,7 @@ const RACEPACK_CAN_MAP = {
      */
     0x1E019000: (data) => {
         return [
-            { id: DATA_MAP.MAP, data: data.readInt32LE(0) / 256 },
+  //          { id: DATA_MAP.MAP, data: data.readInt32LE(0) / 256 },
             // { id: DATA_KEYS.KNOCK_RETARD, data: data.readInt32LE(4) / 256 },
         ];
     },
@@ -102,7 +102,7 @@ const RACEPACK_CAN_MAP = {
      */
     0x1E01D000: (data) => {
         return [
-            { id: DATA_MAP.MAT, data: data.readInt32LE(0) / 256 },
+  //          { id: DATA_MAP.MAT, data: data.readInt32LE(0) / 256 },
             // { id: DATA_KEYS.TPS, data: data.readInt32LE(4) / 256 },
         ];
     },
@@ -116,8 +116,8 @@ const RACEPACK_CAN_MAP = {
      */
     0x1E021000: (data) => {
         return [
-            { id: DATA_MAP.BAR_PRESSURE, data: data.readInt32LE(0) / 256 },
-            { id: DATA_MAP.CTS, data: data.readInt32LE(4) / 256 },
+            { id: DATA_MAP.BAR_PRESSURE, data: convertToRealValue(data.readInt32LE(0)) },
+            { id: DATA_MAP.CTS, data: convertToRealValue(data.readInt32LE(4)) },
         ];
     },
 
@@ -142,6 +142,22 @@ const RACEPACK_CAN_MAP = {
      * Speed          xxx MPH
      */
 };
+
+const convertToRealValue = (rawValue) => {
+    // Ensure that the rawValue is within the signed 32-bit integer range
+    rawValue = rawValue | 0;
+
+    // Extract sign, integer, and fractional parts
+    const sign = (rawValue & 0x80000000) ? -1 : 1;
+    const integerPart = (rawValue >> 8);
+    const fractionalPart = ((rawValue & 0xFF) / 256.0);
+
+    // Calculate the real value with correct scaling
+    const realValue = sign * (integerPart + fractionalPart);
+
+    return realValue;
+};
+
 
 // BIG NOTE:  (note for OpenINverter that uses LE)
 // Double check your ECU stores data Big Endian or Little Endian
