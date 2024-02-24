@@ -12,6 +12,6 @@ sudo rm /etc/systemd/system/vcan_server.service
 sudo chmod u+rw /home/pi/AutoDashBackEnd/RPI_system/start_vcan.sh
 
 # ccan socket server and web server setup
-sudo cp /home/pi/AutoDashBackEnd/RPI_system/services/vcan/vcan_server.service /etc/systemd/system/
+sudo cp /home/pi/AutoDashBackEnd/RPI_system/services/vcan/vcan_server.service  /etc/systemd/system/
 sudo chmod u+rw /etc/systemd/system/vcan_server.service
 sudo systemctl enable vcan_server
